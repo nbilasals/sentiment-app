@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sentiment Analysis</title>
+</head>
+<body>
+    <h1>Sentiment Analysis Results</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <input type="submit" value="Upload">
+    </form>
+    {% if charts %}
+
+        <h2>Hasil Analisis Sentimen dengan Logistic Regression vs Lexicon-Based</h2>
+        {{ charts.table|safe }}
+        
+    
+        <h2>Sentiment Analysis Distribution</h2>
+        <img src="{{ charts.data_distribution }}" alt="Sentiment Distribution">
+        <h2>Pie Chart for Sentiment Distribution</h2>
+        <img src="{{ charts.data_pie }}" alt="Pie Chart">
+        <h2>Value Counts Comparison</h2>
+        {{ charts.value_counts | safe }}
+        <h2>Word Clouds (Logistic Regression)</h2>
+        <div>
+            <h3>Positive</h3>
+            <img src="data:image/png;base64,{{ charts.wordclouds_lr.positive }}" alt="Positive Word Cloud">
+        </div>
+        <div>
+            <h3>Neutral</h3>
+            <img src="data:image/png;base64,{{ charts.wordclouds_lr.neutral }}" alt="Neutral Word Cloud">
+        </div>
+        <div>
+            <h3>Negative</h3>
+            <img src="data:image/png;base64,{{ charts.wordclouds_lr.negative }}" alt="Negative Word Cloud">
+        </div>
+        <h2>Word Clouds (Lexicon-based)</h2>
+        <div>
+            <h3>Positive</h3>
+            <img src="data:image/png;base64,{{ charts.wordclouds_lexicon.positive }}" alt="Positive Word Cloud">
+        </div>
+        <div>
+            <h3>Neutral</h3>
+            <img src="data:image/png;base64,{{ charts.wordclouds_lexicon.neutral }}" alt="Neutral Word Cloud">
+        </div>
+        <div>
+            <h3>Negative</h3>
+            <img src="data:image/png;base64,{{ charts.wordclouds_lexicon.negative }}" alt="Negative Word Cloud">
+        </div>
+        <h2>Top 10 Reviews (Logistic Regression)</h2>
+        <div>
+            <h3>Positive</h3>
+            {{ charts.top_reviews_lr.positive | safe }}
+        </div>
+        <div>
+            <h3>Neutral</h3>
+            {{ charts.top_reviews_lr.neutral | safe }}
+        </div>
+        <div>
+            <h3>Negative</h3>
+            {{ charts.top_reviews_lr.negative | safe }}
+        </div>
+        <h2>Top 10 Reviews (Lexicon-based)</h2>
+        <div>
+            <h3>Positive</h3>
+            {{ charts.top_reviews_lexicon.positive | safe }}
+        </div>
+        <div>
+            <h3>Neutral</h3>
+            {{ charts.top_reviews_lexicon.neutral | safe }}
+        </div>
+        <div>
+            <h3>Negative</h3>
+            {{ charts.top_reviews_lexicon.negative | safe }}
+        </div>
+    {% endif %}
+</body>
+</html>

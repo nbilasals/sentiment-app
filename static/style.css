@@ -1,0 +1,23 @@
+body {
+    background-color: white;
+    color: black;
+}
+header {
+    background-color: #333;
+    color: #4CAF50;
+}
+h2 {
+    color: #4CAF50;
+    text-align: center;
+}
+.dataframe {
+    color: black;
+    background-color: #333;
+}
+.dataframe .table {
+    color: black;
+}
+.btn-download {
+    background-color: #4CAF50;
+    color: white;
+}

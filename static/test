@@ -1,0 +1,183 @@
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from wordcloud import WordCloud
+import joblib
+import csv
+import os
+import re
+import string
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
+import nltk
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+
+
+# Load logistic regression model
+model = joblib.load(os.path.join('data', 'lr_model.pkl'))
+
+# Load lexicon
+lexicon_positive = {}
+with open(os.path.join('data', 'lexicon_positive_ver1.csv'), 'r') as csvfile:
+    reader = csv.reader(csvfile, delimiter=',')
+    for row in reader:
+        lexicon_positive[row[0]] = int(row[1])
+
+lexicon_negative = {}
+with open(os.path.join('data', 'lexicon_negative_ver1.csv'), 'r') as csvfile:
+    reader = csv.reader(csvfile, delimiter=',')
+    for row in reader:
+        lexicon_negative[row[0]] = int(row[1])
+
+
+def sentiment_analysis_lexicon_indonesia(text):
+    score = 0
+    for word in text:
+        if word in lexicon_positive:
+            score += lexicon_positive[word]
+        if word in lexicon_negative:
+            score -= lexicon_negative[word]
+    if score > 0:
+        polarity = 'positive'
+    elif score < 0:
+        polarity = 'negative'
+    else:
+        polarity = 'neutral'
+    return score, polarity
+
+
+def create_charts(df):
+    st.subheader('Sentiment Analysis (Logistic Regression)')
+    fig, ax = plt.subplots()
+    sns.countplot(x='sentiment_lr', data=df, ax=ax)
+    st.pyplot(fig)
+
+    st.subheader('Sentiment Analysis (Lexicon-based)')
+    fig, ax = plt.subplots()
+    sns.countplot(x='sentiment_lexicon', data=df, ax=ax)
+    st.pyplot(fig)
+
+    st.subheader('Sentiment Distribution Pie Chart (Logistic Regression)')
+    sentiment_counts_lr = df['sentiment_lr'].value_counts()
+    fig, ax = plt.subplots()
+    ax.pie(sentiment_counts_lr, labels=sentiment_counts_lr.index, autopct='%1.1f%%')
+    st.pyplot(fig)
+
+    st.subheader('Sentiment Distribution Pie Chart (Lexicon-based)')
+    sentiment_counts_lexicon = df['sentiment_lexicon'].value_counts()
+    fig, ax = plt.subplots()
+    ax.pie(sentiment_counts_lexicon,
+           labels=sentiment_counts_lexicon.index, autopct='%1.1f%%')
+    st.pyplot(fig)
+
+    st.subheader('Word Cloud')
+    text = ' '.join(df['stem_text'])
+    wordcloud = WordCloud(width=800, height=400).generate(text)
+    fig, ax = plt.subplots()
+    ax.imshow(wordcloud, interpolation='bilinear')
+    ax.axis('off')
+    st.pyplot(fig)
+
+def preprocess_text(text, indo_stopwords):
+    # Convert text to lowercase
+    text = text.lower()
+    
+    # Remove emojis
+    emoji_pattern = re.compile("["
+                           u"\U0001F600-\U0001F64F"  # emoticons
+                           u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+                           u"\U0001F680-\U0001F6FF"  # transport & map symbols
+                           u"\U00002702-\U000027B0"
+                           u"\U000024C2-\U0001F251"
+                           u"\U0001f926-\U0001f937"
+                           u"\U00010000-\U0010ffff"
+                           "]+", flags=re.UNICODE)
+    text = emoji_pattern.sub(r'', text)
+    
+    # Remove URLs
+    text = re.sub(r'http\S+', '', text)
+    
+    # Remove Twitter usernames
+    text = re.sub("@[A-Za-z0-9_]+", "", text)
+    
+    # Remove numbers
+    text = re.sub(r'\d+', '', text)
+    
+    # Remove punctuation
+    text = re.sub(r'[^\w\s]', '', text)
+    
+    # Remove superscript
+    superscript_pattern = re.compile("["u"\U00002070"
+                      u"\U000000B9"
+                      u"\U000000B2-\U000000B3"
+                      u"\U00002074-\U00002079"
+                      u"\U0000207A-\U0000207E"
+                      u"\U0000200D"
+                      "]+", flags=re.UNICODE)
+    text = superscript_pattern.sub(r'', text)
+    
+    # Remove hashtags
+    text = re.sub("#[A-Za-z0-9_]+", "", text)
+    
+    # Remove word repetition
+    text = re.sub(r'(.)\1+', r'\1\1', text)
+    
+    # Remove extra whitespaces
+    text = re.sub(r'\s+', ' ', text)
+    text = text.strip()
+    
+    # Remove small words
+    text = re.sub(r'\b\w{1,3}\b', '', text)
+    
+    # Remove stopwords
+    tokens = word_tokenize(text)
+    filtered_tokens = [token for token in tokens if token.lower() not in indo_stopwords]
+    text = ' '.join(filtered_tokens)
+    
+    # Stemming
+    stem = StemmerFactory()
+    create_stem = stem.create_stemmer()
+    text = create_stem.stem(text)
+    
+    return text
+
+def analyze_sentiment(df):
+    # Preprocess text
+    indo_stopwords = stopwords.words('indonesian')
+    df['processed_text'] = df['Komentar'].apply(lambda x: preprocess_text(x, indo_stopwords))
+
+    # Sentiment analysis using lexicon-based method
+    results = df['processed_text'].apply(sentiment_analysis_lexicon_indonesia)
+    results = list(zip(*results))
+    df['polarity_score'] = results[0]
+    df['sentiment_lexicon'] = results[1]
+
+    # Sentiment analysis using logistic regression model
+    # Assuming you have a function to convert text to TF-IDF vectors named 'vectorize_text'
+    # and the logistic regression model is loaded as 'model'
+    X = vectorize_text(df['processed_text'])  # Convert text to TF-IDF vectors
+    df['sentiment_lr'] = model.predict(X)
+
+    return df
+
+st.title('Sentiment Analysis App')
+
+uploaded_file = st.file_uploader("Upload CSV file", type=["csv"])
+
+if uploaded_file is not None:
+    # Baca data dari file CSV
+    df = pd.read_csv(uploaded_file)
+
+    # Cek apakah kolom 'Komentar' ada dalam dataframe
+    if 'Komentar' not in df.columns:
+        st.error("File CSV harus memiliki kolom bernama 'Komentar'.")
+    else:
+        st.success("File CSV berhasil diunggah. Kolom 'Komentar' ditemukan.")
+    st.write(df.head())
+    df['prepos_text'] = df['stem_text'].str.split()
+    df = analyze_sentiment(df)
+    st.write(df[['stem_text', 'sentiment_lr', 'sentiment_lexicon']])
+    create_charts(df)
