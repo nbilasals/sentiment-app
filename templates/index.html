@@ -2,76 +2,120 @@
 <html>
 <head>
     <title>Sentiment Analysis</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('table').DataTable();
+            bsCustomFileInput.init();
+        });
+    </script>
 </head>
-<body>
-    <h1>Sentiment Analysis Results</h1>
-    <form action="/upload" method="post" enctype="multipart/form-data">
-        <input type="file" name="file">
-        <input type="submit" value="Upload">
+<body class="container">
+    <h1 class="my-4">Sentiment Analysis Results</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data" class="mb-4">
+        <div class="custom-file">
+            <input type="file" class="custom-file-input" name="file" id="file">
+            <label class="custom-file-label" for="file">Choose file</label>
+        </div>
+        <button type="submit" class="btn btn-primary mt-2">Upload</button>
     </form>
     {% if charts %}
+        <h2 class="my-4">Hasil Analisis Sentimen dengan Logistic Regression vs Lexicon-Based</h2>
+        <div class="table-wrapper">
+            {{ charts.table|safe }}
+        </div>
 
-        <h2>Hasil Analisis Sentimen dengan Logistic Regression vs Lexicon-Based</h2>
-        {{ charts.table|safe }}
-        
-    
-        <h2>Sentiment Analysis Distribution</h2>
-        <img src="{{ charts.data_distribution }}" alt="Sentiment Distribution">
-        <h2>Pie Chart for Sentiment Distribution</h2>
-        <img src="{{ charts.data_pie }}" alt="Pie Chart">
-        <h2>Value Counts Comparison</h2>
-        {{ charts.value_counts | safe }}
-        <h2>Word Clouds (Logistic Regression)</h2>
+        <h2 class="my-4">Sentiment Analysis Distribution</h2>
+        <div class="charts-wrapper">
+            <img src="{{ charts.data_distribution }}" alt="Sentiment Distribution" class="img-fluid">
+        </div>
+
+        <h2 class="my-4">Pie Chart for Sentiment Distribution</h2>
+        <div class="charts-wrapper">
+            <img src="{{ charts.data_pie }}" alt="Pie Chart" class="img-fluid">
+        </div>
+
+        <h2 class="my-4">Value Counts Comparison</h2>
+        <div class="table-wrapper">
+            {{ charts.value_counts | safe }}
+        </div>
+
+        <h2 class="my-4">Word Clouds (Logistic Regression)</h2>
+        <div class="charts-wrapper">
+            <div>
+                <h3>Positive</h3>
+                <img src="data:image/png;base64,{{ charts.wordclouds_lr.positive }}" alt="Positive Word Cloud" class="word-cloud">
+            </div>
+            <div>
+                <h3>Neutral</h3>
+                <img src="data:image/png;base64,{{ charts.wordclouds_lr.neutral }}" alt="Neutral Word Cloud" class="word-cloud">
+            </div>
+            <div>
+                <h3>Negative</h3>
+                <img src="data:image/png;base64,{{ charts.wordclouds_lr.negative }}" alt="Negative Word Cloud" class="word-cloud">
+            </div>
+        </div>
+
+        <h2 class="my-4">Word Clouds (Lexicon-based)</h2>
+        <div class="charts-wrapper">
+            <div>
+                <h3>Positive</h3>
+                <img src="data:image/png;base64,{{ charts.wordclouds_lexicon.positive }}" alt="Positive Word Cloud" class="word-cloud">
+            </div>
+            <div>
+                <h3>Neutral</h3>
+                <img src="data:image/png;base64,{{ charts.wordclouds_lexicon.neutral }}" alt="Neutral Word Cloud" class="word-cloud">
+            </div>
+            <div>
+                <h3>Negative</h3>
+                <img src="data:image/png;base64,{{ charts.wordclouds_lexicon.negative }}" alt="Negative Word Cloud" class="word-cloud">
+            </div>
+        </div>
+
+        <h2 class="my-4">Top 10 Reviews (Logistic Regression)</h2>
         <div>
             <h3>Positive</h3>
-            <img src="data:image/png;base64,{{ charts.wordclouds_lr.positive }}" alt="Positive Word Cloud">
+            <div class="table-wrapper">
+                {{ charts.top_reviews_lr.positive | safe }}
+            </div>
         </div>
         <div>
             <h3>Neutral</h3>
-            <img src="data:image/png;base64,{{ charts.wordclouds_lr.neutral }}" alt="Neutral Word Cloud">
+            <div class="table-wrapper">
+                {{ charts.top_reviews_lr.neutral | safe }}
+            </div>
         </div>
         <div>
             <h3>Negative</h3>
-            <img src="data:image/png;base64,{{ charts.wordclouds_lr.negative }}" alt="Negative Word Cloud">
+            <div class="table-wrapper">
+                {{ charts.top_reviews_lr.negative | safe }}
+            </div>
         </div>
-        <h2>Word Clouds (Lexicon-based)</h2>
+
+        <h2 class="my-4">Top 10 Reviews (Lexicon-based)</h2>
         <div>
             <h3>Positive</h3>
-            <img src="data:image/png;base64,{{ charts.wordclouds_lexicon.positive }}" alt="Positive Word Cloud">
+            <div class="table-wrapper">
+                {{ charts.top_reviews_lexicon.positive | safe }}
+            </div>
         </div>
         <div>
             <h3>Neutral</h3>
-            <img src="data:image/png;base64,{{ charts.wordclouds_lexicon.neutral }}" alt="Neutral Word Cloud">
+            <div class="table-wrapper">
+                {{ charts.top_reviews_lexicon.neutral | safe }}
+            </div>
         </div>
         <div>
             <h3>Negative</h3>
-            <img src="data:image/png;base64,{{ charts.wordclouds_lexicon.negative }}" alt="Negative Word Cloud">
-        </div>
-        <h2>Top 10 Reviews (Logistic Regression)</h2>
-        <div>
-            <h3>Positive</h3>
-            {{ charts.top_reviews_lr.positive | safe }}
-        </div>
-        <div>
-            <h3>Neutral</h3>
-            {{ charts.top_reviews_lr.neutral | safe }}
-        </div>
-        <div>
-            <h3>Negative</h3>
-            {{ charts.top_reviews_lr.negative | safe }}
-        </div>
-        <h2>Top 10 Reviews (Lexicon-based)</h2>
-        <div>
-            <h3>Positive</h3>
-            {{ charts.top_reviews_lexicon.positive | safe }}
-        </div>
-        <div>
-            <h3>Neutral</h3>
-            {{ charts.top_reviews_lexicon.neutral | safe }}
-        </div>
-        <div>
-            <h3>Negative</h3>
-            {{ charts.top_reviews_lexicon.negative | safe }}
+            <div class="table-wrapper">
+                {{ charts.top_reviews_lexicon.negative | safe }}
+            </div>
         </div>
     {% endif %}
 </body>
