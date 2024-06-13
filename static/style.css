@@ -1,6 +1,13 @@
 /* style.css */
 body {
     padding: 20px;
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+h1, h2, h3 {
+    margin-top: 20px;
+    text-align: center;
 }
 
 .table-wrapper {
@@ -8,22 +15,43 @@ body {
     max-height: 300px;
     overflow-y: auto;
     margin-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
 }
 
 .word-cloud {
     width: 400px;
     height: 400px;
     display: inline-block;
+    margin: 0 auto;
 }
 
 .charts-wrapper {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     flex-wrap: wrap;
 }
 
-h1, h2, h3 {
-    margin-top: 20px;
+table.dataframe {
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table.dataframe th {
+    background-color: #f2f2f2;
+    color: #333;
+    text-align: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+table.dataframe td {
+    text-align: center;
+    padding: 10px;
+    border: 1px solid #ddd;
 }
 
 .custom-file-input ~ .custom-file-label::after {
