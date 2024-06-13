@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Sentiment Analysis</title>
+    <title>Analisis Sentimen</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
@@ -17,11 +17,11 @@
     </script>
 </head>
 <body class="container">
-    <h1 class="my-4">Sentiment Analysis Results</h1>
+    <h1 class="my-4">Analisis Sentimen terhadap QRIS</h1>
     <form action="/upload" method="post" enctype="multipart/form-data" class="mb-4">
         <div class="custom-file">
             <input type="file" class="custom-file-input" name="file" id="file">
-            <label class="custom-file-label" for="file">Choose file</label>
+            <label class="custom-file-label" for="file">Upload your CSV file</label>
         </div>
         <button type="submit" class="btn btn-primary mt-2">Upload</button>
     </form>
