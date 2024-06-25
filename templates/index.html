@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Analisis Sentimen</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -10,101 +11,195 @@
     <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.min.js"></script>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('table').DataTable();
             bsCustomFileInput.init();
+
+            if ("{{ charts }}") {
+                if (!window.location.hash) {
+                    window.location.hash = "hasil";
+                }
+            }
         });
     </script>
 </head>
-<body class="container">
-    <h1 class="my-4">Analisis Sentimen terhadap QRIS</h1>
-    <form action="/upload" method="post" enctype="multipart/form-data" class="mb-4">
-        <div class="custom-file">
-            <input type="file" class="custom-file-input" name="file" id="file">
-            <label class="custom-file-label" for="file">Upload your CSV file</label>
+
+<body>
+    <header id="header" class="fixed-top d-flex align-items-center header-transparent header-scrolled"">
+        <div class=" container d-flex align-items-center justify-content-between">
+
+        <div class="logo">
+            <h1><a href="index.html"><span>Analisis Sentimen QRIS</span></a></h1>
+            <!-- Uncomment below if you prefer to use an image logo -->
+            <!-- <a href="index.html"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
         </div>
-        <button type="submit" class="btn btn-primary mt-2">Upload</button>
-    </form>
+        <nav id="navbar" class="navbar">
+            <ul>
+                <li><a class="nav-link scrollto active" href="#hero">Home</a></li>
+                <li><a class="nav-link scrollto" href="#upload">Upload</a></li>
+                <li><a class="nav-link scrollto" href="#hasil">Hasil</a></li>
+                <li><a class="nav-link scrollto" href="#grafik">Grafik</a></li>
+                <li><a class="nav-link scrollto" href="#worldClouds">World Clouds</a></li>
+                <li><a class="nav-link scrollto" href="#topReviews">Top Reviews</a></li>
+            </ul>
+            <i class="bi bi-list mobile-nav-toggle"></i>
+        </nav><!-- .navbar -->
+        </div>
+    </header><!-- End Header -->
+
+    <section id="hero">
+        <div class="container">
+            <div class="row justify-content-between" style="height: 70vh;">
+                <div class="col-lg-7 pt-5 pt-lg-0 order-2 order-lg-1 d-flex align-items-center">
+                    <div data-aos="zoom-out">
+                        <h1>Selamat datang di aplikasi Analisis Sentimen <span>QRIS</span></h1>
+                        <h2>Unggah file CSV dan dapatkan hasil analisis.</h2>
+                        <div class="text-center text-lg-start">
+                            <a href="#upload" class="btn-get-started scrollto">Get Started</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 order-1 order-lg-2 hero-img" data-aos="zoom-out" data-aos-delay="300">
+                    <img src="assets/img/hero-img.png" class="img-fluid animated" alt="">
+                </div>
+            </div>
+        </div>
+
+        <svg class="hero-waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+            viewBox="0 24 150 28 " preserveAspectRatio="none">
+            <defs>
+                <path id="wave-path" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z">
+            </defs>
+            <g class="wave1">
+                <use xlink:href="#wave-path" x="50" y="3" fill="rgba(255,255,255, .1)">
+            </g>
+            <g class="wave2">
+                <use xlink:href="#wave-path" x="50" y="0" fill="rgba(255,255,255, .2)">
+            </g>
+            <g class="wave3">
+                <use xlink:href="#wave-path" x="50" y="9" fill="#fff">
+            </g>
+        </svg>
+
+    </section><!-- End Hero -->
     {% if charts %}
-        <h2 class="my-4">Hasil Analisis Sentimen dengan Logistic Regression vs Lexicon-Based</h2>
-        <div class="table-wrapper">
-            {{ charts.table|safe }}
+    <div class="container" style="padding-top: 50px;">
+        <div id="upload">
+            <h1 class="my-4">Analisis Sentimen terhadap QRIS</h1>
+            <form action="/upload" method="post" enctype="multipart/form-data" class="mb-4">
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" name="file" id="file">
+                    <label class="custom-file-label" for="file">Upload your CSV file</label>
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Upload</button>
+            </form>
         </div>
-
-        <h2 class="my-4">Sentiment Analysis Distribution</h2>
-        <div class="charts-wrapper">
-            <img src="{{ charts.data_distribution }}" alt="Sentiment Distribution" class="img-fluid">
+        <div id="hasil">
+            <h2 class="my-4">Hasil Analisis Sentimen dengan Logistic Regression vs Lexicon-Based</h2>
+            <div class="table-wrapper">
+                {{ charts.table|safe }}
+            </div>
         </div>
+        <div id="grafik">
+            <h2 class="my-4">Sentiment Analysis Distribution</h2>
+            <div class="charts-wrapper">
+                <img src="{{ charts.data_distribution }}" alt="Sentiment Distribution" class="img-fluid">
+            </div>
 
-        <h2 class="my-4">Pie Chart for Sentiment Distribution</h2>
-        <div class="charts-wrapper">
-            <img src="{{ charts.data_pie }}" alt="Pie Chart" class="img-fluid">
+            <h2 class="my-4">Pie Chart for Sentiment Distribution</h2>
+            <div class="charts-wrapper">
+                <img src="{{ charts.data_pie }}" alt="Pie Chart" class="img-fluid">
+            </div>
+
+            <h2 class="my-4">Value Counts Comparison</h2>
+            <div class="table-wrapper">
+                {{ charts.value_counts | safe }}
+            </div>
         </div>
+        <div id="worldClouds">
+            <h2 class="my-4">Word Clouds (Logistic Regression)</h2>
+            <div class="charts-wrapper">
+                <div>
+                    <h3>Positive</h3>
+                    <img src="data:image/png;base64,{{ charts.wordclouds_lr.positive }}" alt="Positive Word Cloud"
+                        class="word-cloud">
+                </div>
+                <div>
+                    <h3>Neutral</h3>
+                    <img src="data:image/png;base64,{{ charts.wordclouds_lr.neutral }}" alt="Neutral Word Cloud"
+                        class="word-cloud">
+                </div>
+                <div>
+                    <h3>Negative</h3>
+                    <img src="data:image/png;base64,{{ charts.wordclouds_lr.negative }}" alt="Negative Word Cloud"
+                        class="word-cloud">
+                </div>
+            </div>
 
-        <h2 class="my-4">Value Counts Comparison</h2>
-        <div class="table-wrapper">
-            {{ charts.value_counts | safe }}
+            <h2 class="my-4">Word Clouds (Lexicon-based)</h2>
+            <div class="charts-wrapper">
+                <div>
+                    <h3>Positive</h3>
+                    <img src="data:image/png;base64,{{ charts.wordclouds_lexicon.positive }}" alt="Positive Word Cloud"
+                        class="word-cloud">
+                </div>
+                <div>
+                    <h3>Neutral</h3>
+                    <img src="data:image/png;base64,{{ charts.wordclouds_lexicon.neutral }}" alt="Neutral Word Cloud"
+                        class="word-cloud">
+                </div>
+                <div>
+                    <h3>Negative</h3>
+                    <img src="data:image/png;base64,{{ charts.wordclouds_lexicon.negative }}" alt="Negative Word Cloud"
+                        class="word-cloud">
+                </div>
+            </div>
         </div>
-
-        <h2 class="my-4">Word Clouds (Logistic Regression)</h2>
-        <div class="charts-wrapper">
+        <div id="topReviews">
+            <h2 class="my-4">Top 10 Reviews (Logistic Regression)</h2>
             <div>
                 <h3>Positive</h3>
-                <img src="data:image/png;base64,{{ charts.wordclouds_lr.positive }}" alt="Positive Word Cloud" class="word-cloud">
+                {{ charts.top_reviews_lr.positive | safe }}
             </div>
             <div>
                 <h3>Neutral</h3>
-                <img src="data:image/png;base64,{{ charts.wordclouds_lr.neutral }}" alt="Neutral Word Cloud" class="word-cloud">
+                {{ charts.top_reviews_lr.neutral | safe }}
             </div>
             <div>
                 <h3>Negative</h3>
-                <img src="data:image/png;base64,{{ charts.wordclouds_lr.negative }}" alt="Negative Word Cloud" class="word-cloud">
+                {{ charts.top_reviews_lr.negative | safe }}
             </div>
-        </div>
 
-        <h2 class="my-4">Word Clouds (Lexicon-based)</h2>
-        <div class="charts-wrapper">
+            <h2 class="my-4">Top 10 Reviews (Lexicon-based)</h2>
             <div>
                 <h3>Positive</h3>
-                <img src="data:image/png;base64,{{ charts.wordclouds_lexicon.positive }}" alt="Positive Word Cloud" class="word-cloud">
+                {{ charts.top_reviews_lexicon.positive | safe }}
             </div>
             <div>
                 <h3>Neutral</h3>
-                <img src="data:image/png;base64,{{ charts.wordclouds_lexicon.neutral }}" alt="Neutral Word Cloud" class="word-cloud">
+                {{ charts.top_reviews_lexicon.neutral | safe }}
             </div>
             <div>
                 <h3>Negative</h3>
-                <img src="data:image/png;base64,{{ charts.wordclouds_lexicon.negative }}" alt="Negative Word Cloud" class="word-cloud">
+                {{ charts.top_reviews_lexicon.negative | safe }}
             </div>
         </div>
-
-        <h2 class="my-4">Top 10 Reviews (Logistic Regression)</h2>
-        <div>
-            <h3>Positive</h3>
-            {{ charts.top_reviews_lr.positive | safe }}
+    </div>
+    {% else %}
+    <div class="container"
+        style="padding-top: 50px; height: 100vh; display: flex; justify-content: center; align-items: center;">
+        <div id="upload">
+            <h1 class="my-4">Analisis Sentimen terhadap QRIS</h1>
+            <form action="/upload" method="post" enctype="multipart/form-data" class="mb-4">
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" name="file" id="file">
+                    <label class="custom-file-label" for="file">Upload your CSV file</label>
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Upload</button>
+            </form>
         </div>
-        <div>
-            <h3>Neutral</h3>
-            {{ charts.top_reviews_lr.neutral | safe }}
-        </div>
-        <div>
-            <h3>Negative</h3>
-            {{ charts.top_reviews_lr.negative | safe }}
-        </div>
-
-        <h2 class="my-4">Top 10 Reviews (Lexicon-based)</h2>
-        <div>
-            <h3>Positive</h3>
-            {{ charts.top_reviews_lexicon.positive | safe }}
-        </div>
-        <div>
-            <h3>Neutral</h3>
-            {{ charts.top_reviews_lexicon.neutral | safe }}
-        </div>
-        <div>
-            <h3>Negative</h3>
-            {{ charts.top_reviews_lexicon.negative | safe }}
-        </div>
+    </div>
     {% endif %}
 </body>
+
 </html>

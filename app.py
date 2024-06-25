@@ -89,7 +89,6 @@ def preprocess_text(text, indo_stopwords):
         word for word in tokens if word not in indo_stopwords and word not in string.punctuation]
     return tokens
 
-
 @app.route('/', methods=['GET'])
 def index():
     return render_template('index.html')
@@ -248,3 +247,16 @@ def create_charts(df):
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+
+# logModel = LogisticRegression(multi_class='multinomial',
+#                               solver='lbfgs',
+#                               max_iter=1000,
+#                               penalty ='l2',
+#                               C=4,
+#                               class_weight=class_weights
+#                              )
+
+# # Train the model
+# logModel.fit(X_train, y_train)
